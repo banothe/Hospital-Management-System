@@ -1,0 +1,12 @@
+@charset "UTF-8";
+        body {
+            text-align: center; /*Centers text and images*/
+            font-family: Arial, sans-serif;
+            padding-top: 50px;
+        } 
+        .logo {
+            display: block;
+            margin: 20px auto; /* Centers the image block */
+        }
+
+    
