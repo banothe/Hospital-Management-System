@@ -19,7 +19,29 @@ List<Map<String, String>> appointmentList =
 <a href="adminDashboard.jsp">Back</a>
 
 <br><br>
+<form method="get" action="ViewAppointmentServlet">
 
+Search Patient:
+<input type="text" name="name"
+value="<%= request.getParameter("name") != null ? request.getParameter("name") : "" %>">
+
+Status:
+<select name="status">
+    <option value="">All</option>
+    <option value="PENDING">Pending</option>
+    <option value="APPROVED">Approved</option>
+    <option value="COMPLETED">Completed</option>
+</select>
+
+Date:
+<input type="date" name="date"
+value="<%= request.getParameter("date") != null ? request.getParameter("date") : "" %>">
+
+<button type="submit">Search</button>
+
+</form>
+
+<br><br>
 <% if (appointmentList == null || appointmentList.isEmpty()) { %>
 
 <p>No appointments found.</p>

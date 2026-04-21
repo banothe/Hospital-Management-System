@@ -33,14 +33,44 @@ public class DoctorDashboardServlet extends HttpServlet {
 		try {
 			Connection conn = DBConnection.getConnection();
 
+			String name = request.getParameter("name");
+			String status = request.getParameter("status");
+			String date = request.getParameter("date");
+
 			String sql = "SELECT A.APPOINTMENT_ID, P.NAME AS PATIENT_NAME, "
 			        + "A.APPOINTMENT_DATE, A.APPOINTMENT_TIME, A.STATUS "
 			        + "FROM APPOINTMENT A "
 			        + "LEFT JOIN PATIENT P ON A.PATIENT_ID = P.PATIENT_ID "
 			        + "WHERE A.DOCTOR_ID=?";
 
+			if (name != null && !name.trim().isEmpty()) {
+			    sql += " AND LOWER(P.NAME) LIKE ?";
+			}
+
+			if (status != null && !status.trim().isEmpty()) {
+			    sql += " AND A.STATUS = ?";
+			}
+
+			if (date != null && !date.trim().isEmpty()) {
+			    sql += " AND A.APPOINTMENT_DATE = ?";
+			}
+
 			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setInt(1, doctorId);
+
+			int i = 1;
+			ps.setInt(i++, doctorId);
+
+			if (name != null && !name.trim().isEmpty()) {
+			    ps.setString(i++, "%" + name.toLowerCase() + "%");
+			}
+
+			if (status != null && !status.trim().isEmpty()) {
+			    ps.setString(i++, status);
+			}
+
+			if (date != null && !date.trim().isEmpty()) {
+			    ps.setDate(i++, java.sql.Date.valueOf(date));
+			}
 
 			ResultSet rs = ps.executeQuery();
 

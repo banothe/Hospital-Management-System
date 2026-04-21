@@ -25,13 +25,47 @@ public class ViewAppointmentServlet extends HttpServlet {
 		List<Map<String,String>> appointmentList=new ArrayList<>();
 		try {
 			Connection conn=DBConnection.getConnection();
-			String sql="select a.appointment_id , p.name as patient_name , D.name as doctor_name, "
-					+ "a.appointment_date , a.appointment_time , a.status "
-					+ "from  appointment a	"
-					+ "join patient p on a.patient_id=p.patient_id "
-					+ "join doctor d on a.doctor_id=d.doctor_id";
-			PreparedStatement ps=conn.prepareStatement(sql);
-			ResultSet rs=ps.executeQuery();
+			String name = request.getParameter("name");
+			String status = request.getParameter("status");
+			String date = request.getParameter("date");
+
+			String sql = "select a.appointment_id , p.name as patient_name , d.name as doctor_name, "
+			        + "a.appointment_date , a.appointment_time , a.status "
+			        + "from appointment a "
+			        + "join patient p on a.patient_id=p.patient_id "
+			        + "join doctor d on a.doctor_id=d.doctor_id "
+			        + "where 1=1";
+
+			if (name != null && !name.isEmpty()) {
+			    sql += " AND LOWER(p.name) LIKE ?";
+			}
+
+			if (status != null && !status.isEmpty()) {
+			    sql += " AND a.status = ?";
+			}
+
+			if (date != null && !date.isEmpty()) {
+			    sql += " AND a.appointment_date = ?";
+			}
+
+			PreparedStatement ps = conn.prepareStatement(sql);
+
+			int i = 1;
+
+			if (name != null && !name.isEmpty()) {
+			    ps.setString(i++, "%" + name.toLowerCase() + "%");
+			}
+
+			if (status != null && !status.isEmpty()) {
+			    ps.setString(i++, status);
+			}
+
+			if (date != null && !date.isEmpty()) {
+			    ps.setDate(i++, java.sql.Date.valueOf(date));
+			}
+
+			ResultSet rs = ps.executeQuery();
+			
 			while(rs.next()){
 				Map<String,String> map=new HashMap<>();
 				map.put("id",rs.getString("appointment_id"));
